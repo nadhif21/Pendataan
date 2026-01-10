@@ -1,48 +1,65 @@
 // Aplikasi BKKBN Kelurahan Way Kandis
 
-// Data menu untuk setiap divisi
-const DIVISI_MENU = {
-    tpk: {
-        icon: '👥',
-        title: 'TPK',
-        subtitle: 'Tim Penggerak Kelurahan',
-        mendataUrl: BKKBN_CONFIG.TPK_MENDATA_URL,
-        lihatDataUrl: 'pendataan/index.html'
-    },
-    sub: {
-        icon: '👨‍👩‍👧‍👦',
-        title: 'SUB',
-        subtitle: 'Sub Tim',
-        mendataUrl: BKKBN_CONFIG.SUB_MENDATA_URL,
-        lihatDataUrl: BKKBN_CONFIG.SUB_LIHAT_DATA_URL
-    },
-    bkb: {
-        icon: '👶',
-        title: 'BKB',
-        subtitle: 'Bina Keluarga Balita',
-        mendataUrl: BKKBN_CONFIG.BKB_MENDATA_URL,
-        lihatDataUrl: BKKBN_CONFIG.BKB_LIHAT_DATA_URL
+// Fungsi untuk mendapatkan data menu divisi
+function getDivisiMenu() {
+    // Pastikan BKKBN_CONFIG sudah ter-load
+    if (typeof BKKBN_CONFIG === 'undefined') {
+        console.error('BKKBN_CONFIG belum ter-load');
+        return {};
     }
-};
+    
+    return {
+        tpk: {
+            icon: '👥',
+            title: 'TPK',
+            subtitle: 'Tim Penggerak Kelurahan',
+            mendataUrl: BKKBN_CONFIG.TPK_MENDATA_URL,
+            lihatDataUrl: 'pendataan/index.html'
+        },
+        sub: {
+            icon: '👨‍👩‍👧‍👦',
+            title: 'SUB',
+            subtitle: 'Sub Tim',
+            mendataUrl: BKKBN_CONFIG.SUB_MENDATA_URL,
+            lihatDataUrl: BKKBN_CONFIG.SUB_LIHAT_DATA_URL
+        },
+        bkb: {
+            icon: '👶',
+            title: 'BKB',
+            subtitle: 'Bina Keluarga Balita',
+            mendataUrl: BKKBN_CONFIG.BKB_MENDATA_URL,
+            lihatDataUrl: BKKBN_CONFIG.BKB_LIHAT_DATA_URL
+        }
+    };
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-    const divisiSelect = document.getElementById('divisiSelect');
-    
-    // Update menu saat pertama kali load
-    updateMenu('tpk');
-    
-    // Update menu saat dropdown berubah
-    divisiSelect.addEventListener('change', function() {
-        const selectedDivisi = this.value;
-        updateMenu(selectedDivisi);
-    });
-    
-    // Validasi dan warning jika link belum dikonfigurasi
-    checkConfiguration();
+    // Tunggu sebentar untuk memastikan semua script sudah ter-load
+    setTimeout(function() {
+        const divisiSelect = document.getElementById('divisiSelect');
+        
+        if (!divisiSelect) {
+            console.error('Elemen divisiSelect tidak ditemukan');
+            return;
+        }
+        
+        // Update menu saat pertama kali load
+        updateMenu('tpk');
+        
+        // Update menu saat dropdown berubah
+        divisiSelect.addEventListener('change', function() {
+            const selectedDivisi = this.value;
+            updateMenu(selectedDivisi);
+        });
+        
+        // Validasi dan warning jika link belum dikonfigurasi
+        checkConfiguration();
+    }, 100);
 });
 
 // Fungsi untuk mengupdate menu berdasarkan divisi yang dipilih
 function updateMenu(divisi) {
+    const DIVISI_MENU = getDivisiMenu();
     const menuData = DIVISI_MENU[divisi];
     
     if (!menuData) {
@@ -62,9 +79,20 @@ function updateMenu(divisi) {
     if (menuTitle) menuTitle.textContent = menuData.title;
     if (menuSubtitle) menuSubtitle.textContent = menuData.subtitle;
     
+    // Helper function untuk cek URL valid
+    function isValidUrl(url) {
+        return url && 
+               url !== '#' && 
+               !url.includes('YOUR_') && 
+               (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('./') || url.includes('/'));
+    }
+    
     // Update link Mendata
     if (btnMendata) {
-        if (menuData.mendataUrl && !menuData.mendataUrl.includes('YOUR_')) {
+        // Hapus onclick sebelumnya
+        btnMendata.onclick = null;
+        
+        if (isValidUrl(menuData.mendataUrl)) {
             btnMendata.href = menuData.mendataUrl;
             btnMendata.classList.remove('disabled');
         } else {
@@ -79,11 +107,12 @@ function updateMenu(divisi) {
     
     // Update link Melihat Data
     if (btnLihatData) {
-        if (menuData.lihatDataUrl && menuData.lihatDataUrl !== '#' && !menuData.lihatDataUrl.includes('YOUR_')) {
+        // Hapus onclick sebelumnya
+        btnLihatData.onclick = null;
+        
+        if (isValidUrl(menuData.lihatDataUrl)) {
             btnLihatData.href = menuData.lihatDataUrl;
             btnLihatData.classList.remove('disabled');
-            // Hapus event listener sebelumnya jika ada
-            btnLihatData.onclick = null;
         } else {
             btnLihatData.href = '#';
             btnLihatData.classList.add('disabled');

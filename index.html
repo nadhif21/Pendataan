@@ -52,7 +52,14 @@
         </footer>
     </div>
 
+    <!-- Script harus di-load berurutan: config dulu, baru app -->
     <script src="assets/bkkbn/bkkbn-config.js"></script>
+    <script>
+        // Pastikan config sudah ter-load sebelum app.js
+        if (typeof BKKBN_CONFIG === 'undefined') {
+            console.error('Error: BKKBN_CONFIG tidak ditemukan. Pastikan bkkbn-config.js sudah ter-load.');
+        }
+    </script>
     <script src="assets/bkkbn/bkkbn-app.js"></script>
 </body>
 </html>
