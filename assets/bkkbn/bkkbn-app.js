@@ -12,7 +12,7 @@ function getDivisiMenu() {
         tpk: {
             icon: '👥',
             title: 'TPK',
-            subtitle: 'Tim Penggerak Kelurahan',
+            subtitle: 'Tim Pendamping Keluarga',
             mendataUrl: BKKBN_CONFIG.TPK_MENDATA_URL,
             lihatDataUrl: 'pendataan/index.html'
         },
