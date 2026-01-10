@@ -414,7 +414,6 @@ footer {
         font-size: 12px;
     }
 
-    /* Untuk mobile, tampilkan table sebagai cards */
     .table-wrapper {
         display: block;
     }
