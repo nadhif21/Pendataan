@@ -269,6 +269,7 @@ table {
     border-collapse: collapse;
     background: white;
     font-size: 14px;
+    table-layout: auto;
 }
 
 thead {
@@ -283,13 +284,21 @@ th {
     font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    white-space: nowrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 200px;
 }
 
 td {
     padding: 14px 12px;
     border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
+    max-width: 300px;
+    vertical-align: top;
+    white-space: normal;
+    line-height: 1.6;
 }
 
 tbody tr {
@@ -412,6 +421,11 @@ footer {
     th, td {
         padding: 10px 8px;
         font-size: 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        white-space: normal;
+        line-height: 1.6;
     }
 
     .table-wrapper {
@@ -437,23 +451,46 @@ footer {
 
     td {
         border: none;
-        padding: 8px 0;
-        text-align: right;
+        padding: 12px 0;
+        padding-right: 0;
+        padding-left: 0;
+        text-align: left;
         position: relative;
-        padding-right: 50%;
         white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        min-height: 44px;
+        box-sizing: border-box;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    td .cell-value {
+        flex: 1;
+        text-align: right;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        white-space: normal;
+        min-width: 0;
     }
 
     td:before {
         content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
+        flex: 0 0 45%;
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
         text-align: left;
         font-weight: 600;
         color: var(--text-color);
+        line-height: 1.6;
+        box-sizing: border-box;
     }
 
     .empty-state {
@@ -481,11 +518,30 @@ footer {
     }
 
     td {
-        padding-right: 45%;
+        padding: 10px 0;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        white-space: normal;
+        min-height: 40px;
+        line-height: 1.6;
+        gap: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
     }
 
     td:before {
-        width: 40%;
+        flex: 0 0 45%;
+        font-size: 11px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: normal;
+        white-space: normal;
+        line-height: 1.6;
+    }
+    
+    td .cell-value {
         font-size: 11px;
     }
 }

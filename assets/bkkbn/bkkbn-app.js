@@ -1,36 +1,14 @@
 // Aplikasi BKKBN Kelurahan Way Kandis
 
-// Fungsi untuk mendapatkan data menu divisi
-function getDivisiMenu() {
+// Fungsi untuk mendapatkan data divisi
+function getDivisiData(divisi) {
     // Pastikan BKKBN_CONFIG sudah ter-load
     if (typeof BKKBN_CONFIG === 'undefined') {
         console.error('BKKBN_CONFIG belum ter-load');
-        return {};
+        return null;
     }
     
-    return {
-        tpk: {
-            icon: '👥',
-            title: 'TPK',
-            subtitle: 'Tim Pendamping Keluarga',
-            mendataUrl: BKKBN_CONFIG.TPK_MENDATA_URL,
-            lihatDataUrl: 'pendataan/index.html'
-        },
-        sub: {
-            icon: '👨‍👩‍👧‍👦',
-            title: 'SUB',
-            subtitle: 'Sub Tim',
-            mendataUrl: BKKBN_CONFIG.SUB_MENDATA_URL,
-            lihatDataUrl: BKKBN_CONFIG.SUB_LIHAT_DATA_URL
-        },
-        bkb: {
-            icon: '👶',
-            title: 'BKB',
-            subtitle: 'Bina Keluarga Balita',
-            mendataUrl: BKKBN_CONFIG.BKB_MENDATA_URL,
-            lihatDataUrl: BKKBN_CONFIG.BKB_LIHAT_DATA_URL
-        }
-    };
+    return BKKBN_CONFIG[divisi] || null;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -43,13 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Update menu saat pertama kali load
-        updateMenu('tpk');
+        // Update cards saat pertama kali load
+        updateCards('tpk');
         
-        // Update menu saat dropdown berubah
+        // Update cards saat dropdown berubah
         divisiSelect.addEventListener('change', function() {
             const selectedDivisi = this.value;
-            updateMenu(selectedDivisi);
+            updateCards(selectedDivisi);
         });
         
         // Validasi dan warning jika link belum dikonfigurasi
@@ -57,27 +35,43 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
 });
 
-// Fungsi untuk mengupdate menu berdasarkan divisi yang dipilih
-function updateMenu(divisi) {
-    const DIVISI_MENU = getDivisiMenu();
-    const menuData = DIVISI_MENU[divisi];
+// Fungsi untuk mengupdate cards berdasarkan divisi yang dipilih
+function updateCards(divisi) {
+    const divisiData = getDivisiData(divisi);
+    const cardsContainer = document.getElementById('cardsContainer');
     
-    if (!menuData) {
-        console.error('Divisi tidak ditemukan:', divisi);
+    if (!divisiData || !cardsContainer) {
+        console.error('Divisi tidak ditemukan atau container tidak ada:', divisi);
         return;
     }
     
-    // Update elemen menu
-    const menuIcon = document.getElementById('menuIcon');
-    const menuTitle = document.getElementById('menuTitle');
-    const menuSubtitle = document.getElementById('menuSubtitle');
-    const btnMendata = document.getElementById('btnMendata');
-    const btnLihatData = document.getElementById('btnLihatData');
+    // Clear container
+    cardsContainer.innerHTML = '';
     
-    // Update konten
-    if (menuIcon) menuIcon.textContent = menuData.icon;
-    if (menuTitle) menuTitle.textContent = menuData.title;
-    if (menuSubtitle) menuSubtitle.textContent = menuData.subtitle;
+    // Jika tidak ada cards, tampilkan pesan
+    if (!divisiData.cards || divisiData.cards.length === 0) {
+        cardsContainer.innerHTML = '<div class="no-cards-message"><p>Belum ada card yang dikonfigurasi untuk divisi ini.</p></div>';
+        return;
+    }
+    
+    // Render setiap card
+    divisiData.cards.forEach((card, index) => {
+        const cardElement = createCardElement(card, index);
+        cardsContainer.appendChild(cardElement);
+    });
+    
+    // Animasi fade untuk transisi
+    cardsContainer.classList.add('updating');
+    setTimeout(() => {
+        cardsContainer.classList.remove('updating');
+    }, 300);
+}
+
+// Fungsi untuk membuat elemen card
+function createCardElement(card, index) {
+    const cardDiv = document.createElement('div');
+    cardDiv.className = 'menu-card';
+    cardDiv.style.animationDelay = `${index * 0.1}s`;
     
     // Helper function untuk cek URL valid
     function isValidUrl(url) {
@@ -87,71 +81,96 @@ function updateMenu(divisi) {
                (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('./') || url.includes('/'));
     }
     
-    // Update link Mendata
+    // Card content
+    cardDiv.innerHTML = `
+        <div class="menu-header">
+            <h3>${card.title || 'Card'}</h3>
+        </div>
+        <div class="menu-actions">
+            <a href="#" class="btn btn-primary card-mendata-btn" data-url="${card.mendataUrl || '#'}">
+                Mendata
+            </a>
+            <a href="#" class="btn btn-secondary card-lihat-data-btn" data-url="${card.lihatDataUrl || '#'}">
+                Melihat Data
+            </a>
+        </div>
+    `;
+    
+    // Setup button events
+    const btnMendata = cardDiv.querySelector('.card-mendata-btn');
+    const btnLihatData = cardDiv.querySelector('.card-lihat-data-btn');
+    
+    // Setup Mendata button
     if (btnMendata) {
-        // Hapus onclick sebelumnya
-        btnMendata.onclick = null;
-        
-        if (isValidUrl(menuData.mendataUrl)) {
-            btnMendata.href = menuData.mendataUrl;
+        const mendataUrl = card.mendataUrl || '#';
+        if (isValidUrl(mendataUrl)) {
+            btnMendata.href = mendataUrl;
             btnMendata.classList.remove('disabled');
         } else {
             btnMendata.href = '#';
             btnMendata.classList.add('disabled');
             btnMendata.onclick = function(e) {
                 e.preventDefault();
-                alert('Link Google Form untuk divisi ini belum dikonfigurasi. Silakan hubungi administrator.');
+                alert('Link Google Form untuk card ini belum dikonfigurasi. Silakan hubungi administrator.');
             };
         }
     }
     
-    // Update link Melihat Data
+    // Setup Melihat Data button
     if (btnLihatData) {
-        // Hapus onclick sebelumnya
-        btnLihatData.onclick = null;
-        
-        if (isValidUrl(menuData.lihatDataUrl)) {
-            btnLihatData.href = menuData.lihatDataUrl;
+        const lihatDataUrl = card.lihatDataUrl || '#';
+        if (isValidUrl(lihatDataUrl)) {
+            btnLihatData.href = lihatDataUrl;
             btnLihatData.classList.remove('disabled');
         } else {
             btnLihatData.href = '#';
             btnLihatData.classList.add('disabled');
             btnLihatData.onclick = function(e) {
                 e.preventDefault();
-                alert('Fitur Melihat Data untuk divisi ini sedang dalam pengembangan. Mohon tunggu update selanjutnya.');
+                alert('Fitur Melihat Data untuk card ini sedang dalam pengembangan. Mohon tunggu update selanjutnya.');
             };
         }
     }
     
-    // Animasi fade untuk transisi
-    const menuCard = document.getElementById('menuCard');
-    if (menuCard) {
-        menuCard.classList.add('updating');
-        setTimeout(() => {
-            menuCard.classList.remove('updating');
-        }, 300);
-    }
+    return cardDiv;
 }
 
 // Fungsi untuk mengecek konfigurasi
 function checkConfiguration() {
     const warnings = [];
     
-    if (!BKKBN_CONFIG.TPK_MENDATA_URL || BKKBN_CONFIG.TPK_MENDATA_URL.includes('YOUR_')) {
-        warnings.push('Link Google Form TPK belum dikonfigurasi');
+    if (!BKKBN_CONFIG) {
+        warnings.push('BKKBN_CONFIG tidak ditemukan');
+        return;
     }
     
-    if (!BKKBN_CONFIG.SUB_MENDATA_URL || BKKBN_CONFIG.SUB_MENDATA_URL.includes('YOUR_')) {
-        warnings.push('Link Google Form SUB belum dikonfigurasi');
-    }
-    
-    if (!BKKBN_CONFIG.BKB_MENDATA_URL || BKKBN_CONFIG.BKB_MENDATA_URL.includes('YOUR_')) {
-        warnings.push('Link Google Form BKB belum dikonfigurasi');
-    }
+    // Cek setiap divisi
+    ['tpk', 'sub', 'bkb'].forEach(divisi => {
+        const divisiData = BKKBN_CONFIG[divisi];
+        if (!divisiData) {
+            warnings.push(`Konfigurasi untuk divisi ${divisi.toUpperCase()} tidak ditemukan`);
+            return;
+        }
+        
+        if (!divisiData.cards || divisiData.cards.length === 0) {
+            warnings.push(`Belum ada card yang dikonfigurasi untuk divisi ${divisi.toUpperCase()}`);
+            return;
+        }
+        
+        // Cek setiap card
+        divisiData.cards.forEach((card, index) => {
+            if (!card.mendataUrl || card.mendataUrl.includes('YOUR_')) {
+                warnings.push(`${divisi.toUpperCase()} - Card "${card.title || index + 1}": Link Google Form belum dikonfigurasi`);
+            }
+            if (!card.lihatDataUrl || card.lihatDataUrl.includes('YOUR_')) {
+                warnings.push(`${divisi.toUpperCase()} - Card "${card.title || index + 1}": URL Melihat Data belum dikonfigurasi`);
+            }
+        });
+    });
     
     if (warnings.length > 0) {
         console.warn('⚠️ Konfigurasi belum lengkap:');
         warnings.forEach(warning => console.warn('  - ' + warning));
-        console.log('📝 Silakan edit file bkkbn-config.js untuk menambahkan link Google Form');
+        console.log('📝 Silakan edit file bkkbn-config.js untuk menambahkan konfigurasi');
     }
 }

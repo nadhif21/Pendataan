@@ -49,19 +49,13 @@ async function loadData() {
     try {
         let data;
         
-        // Cek konfigurasi yang digunakan
-        if (CONFIG.APPS_SCRIPT_URL) {
-            // Menggunakan Google Apps Script
-            data = await loadFromAppsScript();
-        } else if (CONFIG.CSV_URL) {
-            // Menggunakan CSV export
-            data = await loadFromCSV();
-        } else if (CONFIG.SPREADSHEET_ID && CONFIG.API_KEY) {
-            // Menggunakan Google Sheets API
-            data = await loadFromAPI();
-        } else {
-            throw new Error('Silakan konfigurasi CONFIG di file config.js');
+        // Cek konfigurasi Apps Script
+        if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.includes('YOUR_')) {
+            throw new Error('Silakan konfigurasi APPS_SCRIPT_URL di file pendataan-config.js. Lihat panduan di docs/APPS_SCRIPT_GUIDE.md');
         }
+        
+        // Menggunakan Google Apps Script (metode yang direkomendasikan)
+        data = await loadFromAppsScript();
         
         if (!data || data.length === 0) {
             showEmptyState();
@@ -92,143 +86,25 @@ async function loadData() {
     }
 }
 
-// Mengambil data dari CSV (cara termudah)
-async function loadFromCSV() {
-    const response = await fetch(CONFIG.CSV_URL);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    // Handle encoding dengan benar
-    const csvText = await response.text();
-    
-    // Debug: log data yang diterima (optional, bisa dihapus)
-    console.log('CSV loaded, length:', csvText.length);
-    
-    const data = parseCSV(csvText);
-    console.log('Parsed data:', data.length, 'rows');
-    
-    return data;
-}
-
 // Mengambil data dari Google Apps Script
 async function loadFromAppsScript() {
     const response = await fetch(CONFIG.APPS_SCRIPT_URL);
     
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}. Pastikan Apps Script sudah di-deploy dengan benar.`);
     }
     
     const json = await response.json();
+    
+    // Handle response format dari Apps Script
+    if (json.success === false) {
+        throw new Error(json.message || 'Gagal mengambil data dari Apps Script');
+    }
+    
+    // Return data (bisa dalam format {data: [...]} atau langsung array)
     return json.data || json;
 }
 
-// Mengambil data dari Google Sheets API
-async function loadFromAPI() {
-    const sheetName = CONFIG.SHEET_NAME || 'Sheet1';
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SPREADSHEET_ID}/values/${sheetName}?key=${CONFIG.API_KEY}`;
-    
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const json = await response.json();
-    return convertAPIResponseToArray(json.values);
-}
-
-// Parse CSV text menjadi array of objects
-function parseCSV(csvText) {
-    // Handle BOM (Byte Order Mark) yang kadang muncul di CSV
-    if (csvText.charCodeAt(0) === 0xFEFF) {
-        csvText = csvText.slice(1);
-    }
-    
-    const lines = csvText.trim().split(/\r?\n/);
-    if (lines.length === 0) return [];
-    
-    // Parse header
-    const headers = parseCSVLine(lines[0]).map(h => h.trim());
-    
-    // Parse data rows
-    const data = [];
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (line.length === 0) continue;
-        
-        const values = parseCSVLine(line);
-        
-        // Skip baris kosong
-        if (values.every(v => v.trim() === '')) continue;
-        
-        const row = {};
-        headers.forEach((header, index) => {
-            // Handle header yang kosong
-            const headerName = header || `Kolom ${index + 1}`;
-            row[headerName] = (values[index] || '').trim();
-        });
-        data.push(row);
-    }
-    
-    return data;
-}
-
-// Parse satu baris CSV (handle quotes dan commas)
-function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-    
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
-        
-        if (char === '"') {
-            if (inQuotes && nextChar === '"') {
-                // Escaped quote inside quoted field
-                current += '"';
-                i++; // Skip next quote
-            } else if (inQuotes && nextChar === ',') {
-                // End of quoted field
-                inQuotes = false;
-            } else {
-                // Start or end of quoted field
-                inQuotes = !inQuotes;
-            }
-        } else if (char === ',' && !inQuotes) {
-            // Field separator
-            result.push(current);
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    
-    // Push last field
-    result.push(current);
-    
-    return result;
-}
-
-// Convert Google Sheets API response menjadi array of objects
-function convertAPIResponseToArray(values) {
-    if (!values || values.length === 0) return [];
-    
-    const headers = values[0];
-    const data = [];
-    
-    for (let i = 1; i < values.length; i++) {
-        const row = {};
-        headers.forEach((header, index) => {
-            row[header] = values[i][index] || '';
-        });
-        data.push(row);
-    }
-    
-    return data;
-}
 
 // Fungsi untuk mendapatkan kolom yang harus ditampilkan berdasarkan kategori
 function getColumnsByCategory(kategori, allHeaders) {
@@ -364,7 +240,11 @@ function displayData(data) {
                 }
             }
             
-            td.textContent = cellValue;
+            // Buat span untuk value agar lebih mudah di-style
+            const valueSpan = document.createElement('span');
+            valueSpan.className = 'cell-value';
+            valueSpan.textContent = cellValue;
+            td.appendChild(valueSpan);
             td.setAttribute('data-label', headerLabels[header] || header); // Untuk mobile view
             tr.appendChild(td);
         });
@@ -509,4 +389,3 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
-

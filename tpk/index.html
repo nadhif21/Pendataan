@@ -4,21 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>BKKBN WAY KANDIS</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Data TPK - BKKBN WAY KANDIS</title>
+    <link rel="stylesheet" href="../pendataan/styles.css">
 </head>
 <body>
     <div class="container">
         <header>
+            <a href="../index.html" style="text-decoration: none; color: inherit;">
+                <h1>📊 Data TPK - Tim Pendamping Keluarga</h1>
+            </a>
         </header>
-
-        <div class="category-filter">
-            <label for="categorySelect">📋 Pilih Kategori:</label>
-            <select id="categorySelect" class="category-select">
-                <option value="baduta">Baduta dan Balita</option>
-                <option value="ibu-hamil">Ibu Hamil</option>
-            </select>
-        </div>
 
         <div class="search-container">
             <div class="search-box">
@@ -26,7 +21,7 @@
                 <input 
                     type="text" 
                     id="searchInput" 
-                    placeholder="Cari data (Nama Ibu, NIK, Jenis KB, dll)..." 
+                    placeholder="Cari data" 
                     autocomplete="off"
                 >
                 <button id="clearSearch" class="clear-btn" style="display: none;" title="Hapus pencarian">✕</button>
@@ -69,7 +64,7 @@
         </footer>
     </div>
 
-    <script src="pendataan-config.js"></script>
-    <script src="pendataan-app.js"></script>
+    <script src="tpk-config.js"></script>
+    <script src="tpk-app.js"></script>
 </body>
 </html>
