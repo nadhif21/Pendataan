@@ -21,12 +21,6 @@ const BKKBN_CONFIG = {
                 title: 'Jumlah Pendampingan Kelompok Sasaran',
                 mendataUrl: 'https://forms.gle/F56XTnWVBZ8CwhGQ6',
                 lihatDataUrl: 'tpk/index.html'
-            },
-            {
-                id: 'data-keluarga',
-                title: 'Data Keluarga Binaan TPK',
-                mendataUrl: 'https://forms.gle/YOUR_TPK_FORM_LINK_HERE',
-                lihatDataUrl: 'https://script.google.com/macros/s/YOUR_TPK_APPS_SCRIPT_ID/exec'
             }
             // Tambahkan card lain untuk TPK di sini
         ]
@@ -42,35 +36,8 @@ const BKKBN_CONFIG = {
                 title: 'Data Akseptor Sub PPKBD Kelurahan Way Kandis',
                 mendataUrl: 'https://forms.gle/Wnfik3Qcxtq7pHxP7',
                 lihatDataUrl: 'sub/index.html'
-            },
-            {
-                id: 'kunjungan-rumah',
-                title: 'Data Kunjungan Rumah Sub PPKBD',
-                mendataUrl: 'https://forms.gle/YOUR_SUB_FORM_LINK_HERE',
-                lihatDataUrl: 'https://script.google.com/macros/s/YOUR_SUB_APPS_SCRIPT_ID/exec'
             }
             // Tambahkan card lain untuk SUB di sini
-        ]
-    },
-    
-    bkb: {
-        icon: '👶',
-        title: 'BKB',
-        subtitle: 'Bina Keluarga Balita',
-        cards: [
-            {
-                id: 'data-bkb',
-                title: 'Data BKB',
-                mendataUrl: 'https://forms.gle/YOUR_BKB_FORM_LINK_HERE',
-                lihatDataUrl: 'https://script.google.com/macros/s/YOUR_BKB_APPS_SCRIPT_ID/exec'
-            },
-            {
-                id: 'kegiatan-bkb',
-                title: 'Data Kegiatan BKB Kelurahan Way Kandis',
-                mendataUrl: 'https://forms.gle/YOUR_BKB_FORM_LINK_HERE',
-                lihatDataUrl: 'https://script.google.com/macros/s/YOUR_BKB_APPS_SCRIPT_ID/exec'
-            }
-            // Tambahkan card lain untuk BKB di sini
         ]
     }
 };

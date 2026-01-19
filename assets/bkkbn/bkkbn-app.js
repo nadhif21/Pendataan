@@ -145,7 +145,7 @@ function checkConfiguration() {
     }
     
     // Cek setiap divisi
-    ['tpk', 'sub', 'bkb'].forEach(divisi => {
+    ['tpk', 'sub'].forEach(divisi => {
         const divisiData = BKKBN_CONFIG[divisi];
         if (!divisiData) {
             warnings.push(`Konfigurasi untuk divisi ${divisi.toUpperCase()} tidak ditemukan`);

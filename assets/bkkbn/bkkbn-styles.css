@@ -165,10 +165,12 @@ main {
     width: 100%;
     max-width: 1200px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
     transition: all 0.3s ease;
     align-items: stretch;
+    justify-items: center;
+    justify-content: center;
 }
 
 .cards-container.updating {
@@ -204,6 +206,8 @@ main {
     flex-direction: column;
     min-height: 220px;
     height: 100%;
+    max-width: 400px;
+    width: 100%;
 }
 
 .menu-card:hover {
