@@ -8,12 +8,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const refreshBtn = document.getElementById('refreshBtn');
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
+    const timSelect = document.getElementById('timSelect');
+    const bulanSelect = document.getElementById('bulanSelect');
     
     refreshBtn.addEventListener('click', loadData);
     
     // Setup search functionality
     searchInput.addEventListener('input', handleSearch);
     clearSearchBtn.addEventListener('click', clearSearch);
+    
+    // Setup filter TIM dan Bulan
+    if (timSelect) {
+        timSelect.addEventListener('change', applyFilters);
+    }
+    if (bulanSelect) {
+        bulanSelect.addEventListener('change', applyFilters);
+    }
     
     // Allow Enter key to trigger search
     searchInput.addEventListener('keydown', function(e) {
@@ -110,12 +120,11 @@ function displayData(data) {
         return;
     }
     
-    // Get semua headers dari data pertama
-    const allHeaders = Object.keys(data[0]);
+    // Get semua headers dari data pertama, kecuali Timestamp
+    const allHeaders = Object.keys(data[0]).filter(header => header !== 'Timestamp');
     
     // Mapping nama kolom untuk tampilan yang lebih baik
     const headerLabels = {
-        'Timestamp': 'Waktu',
         'PILIH PERTANYAAN': 'Kategori',
         'NAMA IBU': 'Nama Ibu',
         'NIK IBU': 'NIK Ibu',
@@ -127,7 +136,7 @@ function displayData(data) {
         'Berat Bad': 'Berat Badan'
     };
     
-    // Create header row - tampilkan semua kolom
+    // Create header row - tampilkan semua kolom kecuali Timestamp
     tableHeader.innerHTML = '';
     allHeaders.forEach(header => {
         const th = document.createElement('th');
@@ -140,22 +149,10 @@ function displayData(data) {
     data.forEach((row) => {
         const tr = document.createElement('tr');
         
-        // Tampilkan semua kolom
+        // Tampilkan semua kolom kecuali Timestamp
         allHeaders.forEach(header => {
             const td = document.createElement('td');
             let cellValue = row[header] || '';
-            
-            // Format khusus untuk beberapa kolom
-            if (header === 'Timestamp' && cellValue) {
-                try {
-                    const date = new Date(cellValue);
-                    if (!isNaN(date.getTime())) {
-                        cellValue = date.toLocaleString('id-ID');
-                    }
-                } catch (e) {
-                    // Keep original value
-                }
-            }
             
             // Buat span untuk value agar lebih mudah di-style
             const valueSpan = document.createElement('span');
@@ -199,12 +196,16 @@ function hideEmptyState() {
     }
 }
 
-// Apply filters (hanya search, tanpa kategori)
+// Apply filters (search, TIM, dan bulan)
 function applyFilters() {
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
+    const timSelect = document.getElementById('timSelect');
+    const bulanSelect = document.getElementById('bulanSelect');
     
     const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const selectedTim = timSelect ? timSelect.value : '';
+    const selectedBulan = bulanSelect ? bulanSelect.value : '';
     
     // Show/hide clear button
     if (clearSearchBtn) {
@@ -215,18 +216,65 @@ function applyFilters() {
         }
     }
     
-    // Filter berdasarkan search term
-    if (searchTerm.length === 0) {
-        filteredData = currentData;
-    } else {
-        filteredData = currentData.filter(row => {
-            // Search in all column values
-            return Object.values(row).some(value => {
+    // Filter data berdasarkan semua kriteria
+    filteredData = currentData.filter(row => {
+        // Filter berdasarkan TIM
+        if (selectedTim) {
+            // Cari TIM di semua kolom (case insensitive)
+            const timFound = Object.values(row).some(value => {
+                const stringValue = String(value || '').trim();
+                return stringValue.toLowerCase() === selectedTim.toLowerCase() || 
+                       stringValue.toLowerCase().includes(selectedTim.toLowerCase());
+            });
+            if (!timFound) {
+                return false;
+            }
+        }
+        
+        // Filter berdasarkan Bulan
+        if (selectedBulan) {
+            // Cari bulan di semua kolom (case insensitive)
+            const bulanFound = Object.values(row).some(value => {
+                const stringValue = String(value || '').trim();
+                return stringValue.toLowerCase() === selectedBulan.toLowerCase() || 
+                       stringValue.toLowerCase().includes(selectedBulan.toLowerCase());
+            });
+            
+            // Juga cek di kolom Timestamp untuk ekstrak bulan
+            if (!bulanFound && row['Timestamp']) {
+                try {
+                    const date = new Date(row['Timestamp']);
+                    if (!isNaN(date.getTime())) {
+                        const monthNames = ['januari', 'februari', 'maret', 'april', 'mei', 'juni', 
+                                          'juli', 'agustus', 'september', 'oktober', 'november', 'desember'];
+                        const monthName = monthNames[date.getMonth()];
+                        if (monthName === selectedBulan.toLowerCase()) {
+                            return true;
+                        }
+                    }
+                } catch (e) {
+                    // Keep original check
+                }
+            }
+            
+            if (!bulanFound) {
+                return false;
+            }
+        }
+        
+        // Filter berdasarkan search term
+        if (searchTerm.length > 0) {
+            const searchFound = Object.values(row).some(value => {
                 const stringValue = String(value || '').toLowerCase();
                 return stringValue.includes(searchTerm);
             });
-        });
-    }
+            if (!searchFound) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
     
     // Display filtered data
     if (filteredData.length === 0) {
@@ -234,16 +282,16 @@ function applyFilters() {
         tableBody.innerHTML = '';
         updateResultCount(0, currentData.length);
         
-        if (searchTerm.length > 0) {
-            const emptyState = document.getElementById('emptyState');
-            emptyState.innerHTML = '<p>🔍 Tidak ada data yang cocok dengan pencarian "<strong>' + escapeHtml(searchTerm) + '</strong>"</p>';
-            emptyState.style.display = 'block';
-            const tableWrapper = document.querySelector('.table-wrapper');
-            if (tableWrapper) {
-                tableWrapper.style.display = 'none';
-            }
-        } else {
-            showEmptyState();
+        const emptyState = document.getElementById('emptyState');
+        let emptyMessage = 'Tidak ada data yang cocok dengan filter yang dipilih';
+        if (searchTerm.length > 0 || selectedTim || selectedBulan) {
+            emptyMessage = '🔍 Tidak ada data yang cocok dengan filter yang dipilih';
+        }
+        emptyState.innerHTML = '<p>' + emptyMessage + '</p>';
+        emptyState.style.display = 'block';
+        const tableWrapper = document.querySelector('.table-wrapper');
+        if (tableWrapper) {
+            tableWrapper.style.display = 'none';
         }
     } else {
         displayData(filteredData);

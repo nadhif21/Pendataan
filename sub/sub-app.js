@@ -8,12 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const refreshBtn = document.getElementById('refreshBtn');
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
+    const kaderSelect = document.getElementById('kaderSelect');
     
     refreshBtn.addEventListener('click', loadData);
     
     // Setup search functionality
     searchInput.addEventListener('input', handleSearch);
     clearSearchBtn.addEventListener('click', clearSearch);
+    
+    // Setup filter Kader
+    if (kaderSelect) {
+        kaderSelect.addEventListener('change', applyFilters);
+    }
     
     // Allow Enter key to trigger search
     searchInput.addEventListener('keydown', function(e) {
@@ -110,13 +116,11 @@ function displayData(data) {
         return;
     }
     
-    // Get semua headers dari data pertama
-    const allHeaders = Object.keys(data[0]);
+    // Get semua headers dari data pertama, kecuali Timestamp dan Nama Kader
+    const allHeaders = Object.keys(data[0]).filter(header => header !== 'Timestamp' && header !== 'Nama Kader');
     
     // Mapping nama kolom untuk tampilan yang lebih baik
     const headerLabels = {
-        'Timestamp': 'Waktu',
-        'Nama Kader': 'Nama Kader',
         'Nama Akseptor': 'Nama Akseptor',
         'NIK': 'NIK',
         'No. HP': 'No. HP',
@@ -125,7 +129,7 @@ function displayData(data) {
         'Nama Suami': 'Nama Suami'
     };
     
-    // Create header row - tampilkan semua kolom
+    // Create header row - tampilkan semua kolom kecuali Timestamp dan Nama Kader
     tableHeader.innerHTML = '';
     allHeaders.forEach(header => {
         const th = document.createElement('th');
@@ -138,22 +142,10 @@ function displayData(data) {
     data.forEach((row) => {
         const tr = document.createElement('tr');
         
-        // Tampilkan semua kolom
+        // Tampilkan semua kolom kecuali Timestamp dan Nama Kader
         allHeaders.forEach(header => {
             const td = document.createElement('td');
             let cellValue = row[header] || '';
-            
-            // Format khusus untuk beberapa kolom
-            if (header === 'Timestamp' && cellValue) {
-                try {
-                    const date = new Date(cellValue);
-                    if (!isNaN(date.getTime())) {
-                        cellValue = date.toLocaleString('id-ID');
-                    }
-                } catch (e) {
-                    // Keep original value
-                }
-            }
             
             // Buat span untuk value agar lebih mudah di-style
             const valueSpan = document.createElement('span');
@@ -197,12 +189,14 @@ function hideEmptyState() {
     }
 }
 
-// Apply filters (hanya search, tanpa kategori)
+// Apply filters (search dan filter kader)
 function applyFilters() {
     const searchInput = document.getElementById('searchInput');
     const clearSearchBtn = document.getElementById('clearSearch');
+    const kaderSelect = document.getElementById('kaderSelect');
     
     const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const selectedKader = kaderSelect ? kaderSelect.value : '';
     
     // Show/hide clear button
     if (clearSearchBtn) {
@@ -213,18 +207,30 @@ function applyFilters() {
         }
     }
     
-    // Filter berdasarkan search term
-    if (searchTerm.length === 0) {
-        filteredData = currentData;
-    } else {
-        filteredData = currentData.filter(row => {
-            // Search in all column values
-            return Object.values(row).some(value => {
+    // Filter data berdasarkan semua kriteria
+    filteredData = currentData.filter(row => {
+        // Filter berdasarkan Nama Kader
+        if (selectedKader) {
+            // Cari nama kader di kolom 'Nama Kader' (case insensitive)
+            const kaderValue = String(row['Nama Kader'] || '').trim();
+            if (kaderValue.toLowerCase() !== selectedKader.toLowerCase()) {
+                return false;
+            }
+        }
+        
+        // Filter berdasarkan search term
+        if (searchTerm.length > 0) {
+            const searchFound = Object.values(row).some(value => {
                 const stringValue = String(value || '').toLowerCase();
                 return stringValue.includes(searchTerm);
             });
-        });
-    }
+            if (!searchFound) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
     
     // Display filtered data
     if (filteredData.length === 0) {
@@ -232,16 +238,16 @@ function applyFilters() {
         tableBody.innerHTML = '';
         updateResultCount(0, currentData.length);
         
-        if (searchTerm.length > 0) {
-            const emptyState = document.getElementById('emptyState');
-            emptyState.innerHTML = '<p>🔍 Tidak ada data yang cocok dengan pencarian "<strong>' + escapeHtml(searchTerm) + '</strong>"</p>';
-            emptyState.style.display = 'block';
-            const tableWrapper = document.querySelector('.table-wrapper');
-            if (tableWrapper) {
-                tableWrapper.style.display = 'none';
-            }
-        } else {
-            showEmptyState();
+        const emptyState = document.getElementById('emptyState');
+        let emptyMessage = 'Tidak ada data yang cocok dengan filter yang dipilih';
+        if (searchTerm.length > 0 || selectedKader) {
+            emptyMessage = '🔍 Tidak ada data yang cocok dengan filter yang dipilih';
+        }
+        emptyState.innerHTML = '<p>' + emptyMessage + '</p>';
+        emptyState.style.display = 'block';
+        const tableWrapper = document.querySelector('.table-wrapper');
+        if (tableWrapper) {
+            tableWrapper.style.display = 'none';
         }
     } else {
         displayData(filteredData);
