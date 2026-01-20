@@ -86,8 +86,32 @@ header {
 .welcome-section {
     padding: 40px 30px;
     text-align: center;
-    background: var(--background-color);
+    background: transparent;
     border-bottom: 1px solid var(--border-color);
+}
+
+.bkkbn-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.bkkbn-vector {
+    width: 180px;
+    height: 180px;
+    max-width: 100%;
+    animation: float 3s ease-in-out infinite;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .welcome-section h2 {
@@ -367,6 +391,11 @@ footer {
         padding: 30px 20px;
     }
 
+    .bkkbn-vector {
+        width: 150px;
+        height: 150px;
+    }
+
     .welcome-section h2 {
         font-size: 24px;
     }
@@ -441,6 +470,11 @@ footer {
 
     .logo-text h1 {
         font-size: 24px;
+    }
+
+    .bkkbn-vector {
+        width: 120px;
+        height: 120px;
     }
 
     .welcome-section h2 {
