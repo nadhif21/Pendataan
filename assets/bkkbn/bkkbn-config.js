@@ -36,6 +36,12 @@ const BKKBN_CONFIG = {
                 title: 'Data Akseptor Sub PPKBD Kelurahan Way Kandis',
                 mendataUrl: 'https://forms.gle/Wnfik3Qcxtq7pHxP7',
                 lihatDataUrl: 'sub/index.html'
+            },
+            {
+                id: 'data-kerja',
+                title: 'Input Data Kerja SUB PPKBD',
+                mendataUrl: 'https://forms.gle/NetujLNN78VcvKR47',
+                lihatDataUrl: 'sub-kerja/index.html'
             }
             // Tambahkan card lain untuk SUB di sini
         ]

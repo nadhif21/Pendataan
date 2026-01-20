@@ -105,6 +105,41 @@ header h1 {
     padding: 10px;
 }
 
+/* Filter Group */
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kader-select {
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    outline: none;
+    box-shadow: var(--shadow);
+}
+
+.kader-select:hover {
+    border-color: var(--primary-color);
+}
+
+.kader-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.kader-select option {
+    padding: 10px;
+}
+
 /* Search Container */
 .search-container {
     padding: 20px;
@@ -370,6 +405,25 @@ footer {
         padding: 10px 14px;
     }
 
+    .filter-group {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .filter-group label {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .kader-select {
+        width: 100%;
+        min-width: auto;
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
     .search-container {
         padding: 15px;
     }
@@ -544,6 +598,20 @@ footer {
     td .cell-value {
         font-size: 11px;
     }
+}
+
+/* Styling untuk umur >= 50 */
+.umur-high {
+    background-color: #fee2e2 !important; /* Light red background */
+}
+
+.umur-high-text {
+    background-color: #ef4444 !important; /* Red background */
+    color: white !important;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
 }
 
 /* Loading Animation */
