@@ -2,7 +2,7 @@
 //
 // CARA MENGGUNAKAN:
 // 1. Untuk Google Form: Paste URL Google Form di bagian mendataUrl
-// 2. Untuk Melihat Data: Buat Google Apps Script (lihat docs/APPS_SCRIPT_GUIDE.md)
+// 2. Untuk Melihat Data: Buat Google Apps Script (lihat docs/google-apps-script-example.js)
 //    lalu paste URL Apps Script di bagian lihatDataUrl
 // 3. Setiap divisi bisa memiliki multiple cards, tambahkan object baru di array cards
 
@@ -20,7 +20,7 @@ const BKKBN_CONFIG = {
                 id: 'pendampingan-kelompok',
                 title: 'Jumlah Pendampingan Kelompok Sasaran',
                 mendataUrl: 'https://forms.gle/F56XTnWVBZ8CwhGQ6',
-                lihatDataUrl: 'tpk/index.html'
+                lihatDataUrl: 'tpk/tpk-data.html'
             }
             // Tambahkan card lain untuk TPK di sini
         ]
@@ -35,13 +35,13 @@ const BKKBN_CONFIG = {
                 id: 'data-akseptor',
                 title: 'Data Akseptor Sub PPKBD Kelurahan Way Kandis',
                 mendataUrl: 'https://forms.gle/Wnfik3Qcxtq7pHxP7',
-                lihatDataUrl: 'sub/index.html'
+                lihatDataUrl: 'sub/sub-team.html'
             },
             {
                 id: 'data-kerja',
                 title: 'Input Data Kerja SUB PPKBD',
                 mendataUrl: 'https://forms.gle/NetujLNN78VcvKR47',
-                lihatDataUrl: 'sub-kerja/index.html'
+                lihatDataUrl: 'sub-kerja/sub-work.html'
             }
             // Tambahkan card lain untuk SUB di sini
         ]

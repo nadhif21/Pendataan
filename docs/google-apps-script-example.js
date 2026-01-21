@@ -8,9 +8,7 @@
  * 4. Klik Deploy → New deployment → Web app
  * 5. Set "Who has access" menjadi "Anyone"
  * 6. Klik Deploy dan copy URL yang diberikan
- * 7. Paste URL di file config.js (pendataan/config.js atau assets/bkkbn/bkkbn-config.js)
- * 
- * PANDUAN LENGKAP: Lihat docs/APPS_SCRIPT_GUIDE.md
+ * 7. Paste URL di file config.js (pendataan/data-config.js atau assets/bkkbn/homepage-config.js)
  */
 
 function doGet() {
@@ -69,79 +67,4 @@ function doGet() {
   }
 }
 
-/**
- * OPSIONAL: Function untuk filter data berdasarkan query parameter
- * 
- * CATATAN: Function ini tidak digunakan secara default.
- * Jika ingin menggunakan filter, ganti nama function doGet() menjadi doGetWithFilter(e)
- * 
- * Contoh penggunaan:
- * ?filter=Nama:John
- * ?category=Baduta
- */
-function doGetWithFilter(e) {
-  try {
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = spreadsheet.getActiveSheet();
-    const data = sheet.getDataRange().getValues();
-    
-    if (data.length === 0) {
-      return ContentService.createTextOutput(JSON.stringify({
-        success: false,
-        message: 'Tidak ada data di spreadsheet'
-      })).setMimeType(ContentService.MimeType.JSON);
-    }
-    
-    const headers = data[0];
-    let result = [];
-    
-    for (let i = 1; i < data.length; i++) {
-      const row = {};
-      headers.forEach((header, index) => {
-        const headerName = header || `Kolom${index + 1}`;
-        row[headerName] = data[i][index] || '';
-      });
-      result.push(row);
-    }
-    
-    // Filter berdasarkan query parameter
-    if (e && e.parameter) {
-      // Filter berdasarkan kolom tertentu
-      if (e.parameter.filter) {
-        const [key, value] = e.parameter.filter.split(':');
-        result = result.filter(item => 
-          String(item[key] || '').toLowerCase().includes(value.toLowerCase())
-        );
-      }
-      
-      // Filter berdasarkan kategori
-      if (e.parameter.category) {
-        const category = e.parameter.category.toLowerCase();
-        result = result.filter(item => {
-          const kategori = String(item['PILIH PERTANYAAN'] || '').toLowerCase();
-          if (category === 'baduta') {
-            return kategori.includes('baduta') || kategori.includes('balita');
-          } else if (category === 'ibu-hamil') {
-            return kategori.includes('ibu hamil') || kategori.includes('hamil');
-          }
-          return true;
-        });
-      }
-    }
-    
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      data: result,
-      total: result.length,
-      timestamp: new Date().toISOString()
-    })).setMimeType(ContentService.MimeType.JSON);
-    
-  } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      success: false,
-      message: error.toString(),
-      error: error.message
-    })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
 

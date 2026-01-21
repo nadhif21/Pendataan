@@ -171,6 +171,6 @@ function checkConfiguration() {
     if (warnings.length > 0) {
         console.warn('⚠️ Konfigurasi belum lengkap:');
         warnings.forEach(warning => console.warn('  - ' + warning));
-        console.log('📝 Silakan edit file bkkbn-config.js untuk menambahkan konfigurasi');
+        console.log('📝 Silakan edit file homepage-config.js untuk menambahkan konfigurasi');
     }
 }

@@ -93,7 +93,7 @@ async function loadData() {
         
         // Cek konfigurasi Apps Script
         if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.includes('YOUR_')) {
-            throw new Error('Silakan konfigurasi APPS_SCRIPT_URL di file sub-kerja-config.js. Lihat panduan di docs/APPS_SCRIPT_GUIDE.md');
+            throw new Error('Silakan konfigurasi APPS_SCRIPT_URL di file sub-work-config.js');
         }
         
         // Menggunakan Google Apps Script
