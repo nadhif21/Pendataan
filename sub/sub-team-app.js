@@ -110,17 +110,28 @@ async function loadFromAppsScript() {
 function displayData(data) {
     const tableHeader = document.getElementById('tableHeader');
     const tableBody = document.getElementById('tableBody');
+    const kaderSelect = document.getElementById('kaderSelect');
     
     if (data.length === 0) {
         tableBody.innerHTML = '';
         return;
     }
     
-    // Get semua headers dari data pertama, kecuali Timestamp dan Nama Kader
-    const allHeaders = Object.keys(data[0]).filter(header => header !== 'Timestamp' && header !== 'Nama Kader');
+    // Cek apakah harus menampilkan kolom Nama Kader
+    // Tampilkan jika "Semua Kader" dipilih (value = ""), sembunyikan jika kader spesifik dipilih
+    const selectedKader = kaderSelect ? kaderSelect.value : '';
+    const showKaderColumn = selectedKader === '';
+    
+    // Get semua headers dari data pertama, kecuali Timestamp
+    // Jika kader spesifik dipilih, juga kecualikan Nama Kader
+    let allHeaders = Object.keys(data[0]).filter(header => header !== 'Timestamp');
+    if (!showKaderColumn) {
+        allHeaders = allHeaders.filter(header => header !== 'Nama Kader');
+    }
     
     // Mapping nama kolom untuk tampilan yang lebih baik
     const headerLabels = {
+        'Nama Kader': 'Nama Kader',
         'Nama Akseptor': 'Nama Akseptor',
         'NIK': 'NIK',
         'No. HP': 'No. HP',
@@ -129,7 +140,7 @@ function displayData(data) {
         'Nama Suami': 'Nama Suami'
     };
     
-    // Create header row - tampilkan semua kolom kecuali Timestamp dan Nama Kader
+    // Create header row
     tableHeader.innerHTML = '';
     allHeaders.forEach(header => {
         const th = document.createElement('th');
@@ -142,7 +153,7 @@ function displayData(data) {
     data.forEach((row) => {
         const tr = document.createElement('tr');
         
-        // Tampilkan semua kolom kecuali Timestamp dan Nama Kader
+        // Tampilkan kolom sesuai filter
         allHeaders.forEach(header => {
             const td = document.createElement('td');
             let cellValue = row[header] || '';

@@ -334,14 +334,24 @@ function formatTanggalLahir(tanggalLahir) {
 function displayData(data) {
     const tableHeader = document.getElementById('tableHeader');
     const tableBody = document.getElementById('tableBody');
+    const kaderSelect = document.getElementById('kaderSelect');
     
     if (data.length === 0) {
         tableBody.innerHTML = '';
         return;
     }
     
-    // Kolom yang akan ditampilkan (tanpa Timestamp, Nama Kader, dan Umur Istri)
-    const displayHeaders = ['Nama KK', 'Nama Istri', 'Tanggal Lahir Istri'];
+    // Cek apakah harus menampilkan kolom Nama Kader
+    // Tampilkan jika "Semua Kader" dipilih (value = ""), sembunyikan jika kader spesifik dipilih
+    const selectedKader = kaderSelect ? kaderSelect.value : '';
+    const showKaderColumn = selectedKader === '';
+    
+    // Kolom yang akan ditampilkan (tanpa Timestamp dan Umur Istri)
+    // Tambahkan Nama Kader jika showKaderColumn = true
+    let displayHeaders = ['Nama KK', 'Nama Istri', 'Tanggal Lahir Istri'];
+    if (showKaderColumn && data[0]['Nama kader'] !== undefined) {
+        displayHeaders.unshift('Nama kader'); // Tambahkan di awal
+    }
     
     // Mapping nama kolom untuk tampilan yang lebih baik
     const headerLabels = {
