@@ -13,5 +13,5 @@ const CONFIG = {
     // - Ganti URL di bawah dengan URL Apps Script Data Kerja SUB Anda
     // - Pastikan Apps Script sudah di-deploy sebagai Web App dengan akses "Anyone"
     // - Lihat contoh script di: docs/google-apps-script-example.js
-    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzm0Cp4HF-paSv6nim07mImY45BZpcpuBa9i3UZUl7X1Oulaf-3G4TyujgiTIsvsbnY/exec'
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyIQAdAKISjTNvzr9-Th_CIYWN-U6vRLkXfkdcBGcOqEatk5vIe6Y8zecMbv-Qz8Uon/exec'
 };
