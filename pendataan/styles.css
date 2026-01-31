@@ -630,3 +630,11 @@ tbody tr {
     animation: fadeIn 0.3s ease;
 }
 
+/* Highlight untuk search */
+mark {
+    background-color: #ffeb3b;
+    color: var(--text-color);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: 600;
+}

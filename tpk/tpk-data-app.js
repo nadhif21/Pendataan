@@ -110,8 +110,23 @@ async function loadFromAppsScript() {
     return json.data || json;
 }
 
+// Fungsi untuk highlight text
+function highlightText(text, searchTerm) {
+    if (!searchTerm || searchTerm.length === 0) {
+        return text;
+    }
+    
+    const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+    return String(text).replace(regex, '<mark>$1</mark>');
+}
+
+// Escape regex special characters
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // Menampilkan data ke tabel
-function displayData(data) {
+function displayData(data, searchTerm = '') {
     const tableHeader = document.getElementById('tableHeader');
     const tableBody = document.getElementById('tableBody');
     
@@ -157,7 +172,12 @@ function displayData(data) {
             // Buat span untuk value agar lebih mudah di-style
             const valueSpan = document.createElement('span');
             valueSpan.className = 'cell-value';
-            valueSpan.textContent = cellValue;
+            // Highlight jika ada search term
+            if (searchTerm && searchTerm.length > 0) {
+                valueSpan.innerHTML = highlightText(cellValue, searchTerm);
+            } else {
+                valueSpan.textContent = cellValue;
+            }
             td.appendChild(valueSpan);
             td.setAttribute('data-label', headerLabels[header] || header); // Untuk mobile view
             tr.appendChild(td);
@@ -294,7 +314,7 @@ function applyFilters() {
             tableWrapper.style.display = 'none';
         }
     } else {
-        displayData(filteredData);
+        displayData(filteredData, searchTerm);
         hideEmptyState();
     }
 }

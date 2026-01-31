@@ -81,54 +81,86 @@ function createCardElement(card, index) {
                (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('./') || url.includes('/'));
     }
     
-    // Card content
-    cardDiv.innerHTML = `
-        <div class="menu-header">
-            <h3>${card.title || 'Card'}</h3>
-        </div>
-        <div class="menu-actions">
-            <a href="#" class="btn btn-primary card-mendata-btn" data-url="${card.mendataUrl || '#'}">
-                Mendata
-            </a>
-            <a href="#" class="btn btn-secondary card-lihat-data-btn" data-url="${card.lihatDataUrl || '#'}">
-                Melihat Data
-            </a>
-        </div>
-    `;
-    
-    // Setup button events
-    const btnMendata = cardDiv.querySelector('.card-mendata-btn');
-    const btnLihatData = cardDiv.querySelector('.card-lihat-data-btn');
-    
-    // Setup Mendata button
-    if (btnMendata) {
-        const mendataUrl = card.mendataUrl || '#';
-        if (isValidUrl(mendataUrl)) {
-            btnMendata.href = mendataUrl;
-            btnMendata.classList.remove('disabled');
-        } else {
-            btnMendata.href = '#';
-            btnMendata.classList.add('disabled');
-            btnMendata.onclick = function(e) {
-                e.preventDefault();
-                alert('Link Google Form untuk card ini belum dikonfigurasi. Silakan hubungi administrator.');
-            };
+    // Card content - cek apakah single button
+    if (card.singleButton && card.inputUrl) {
+        // Card dengan satu button saja
+        cardDiv.innerHTML = `
+            <div class="menu-header">
+                <h3>${card.title || 'Card'}</h3>
+            </div>
+            <div class="menu-actions">
+                <a href="#" class="btn btn-primary card-input-btn" data-url="${card.inputUrl || '#'}">
+                    Input
+                </a>
+            </div>
+        `;
+        
+        // Setup Input button
+        const btnInput = cardDiv.querySelector('.card-input-btn');
+        if (btnInput) {
+            const inputUrl = card.inputUrl || '#';
+            if (isValidUrl(inputUrl)) {
+                btnInput.href = inputUrl;
+                btnInput.classList.remove('disabled');
+            } else {
+                btnInput.href = '#';
+                btnInput.classList.add('disabled');
+                btnInput.onclick = function(e) {
+                    e.preventDefault();
+                    alert('Link untuk card ini belum dikonfigurasi. Silakan hubungi administrator.');
+                };
+            }
         }
-    }
-    
-    // Setup Melihat Data button
-    if (btnLihatData) {
-        const lihatDataUrl = card.lihatDataUrl || '#';
-        if (isValidUrl(lihatDataUrl)) {
-            btnLihatData.href = lihatDataUrl;
-            btnLihatData.classList.remove('disabled');
-        } else {
-            btnLihatData.href = '#';
-            btnLihatData.classList.add('disabled');
-            btnLihatData.onclick = function(e) {
-                e.preventDefault();
-                alert('Fitur Melihat Data untuk card ini sedang dalam pengembangan. Mohon tunggu update selanjutnya.');
-            };
+    } else {
+        // Card dengan dua button (default)
+        cardDiv.innerHTML = `
+            <div class="menu-header">
+                <h3>${card.title || 'Card'}</h3>
+            </div>
+            <div class="menu-actions">
+                <a href="#" class="btn btn-primary card-mendata-btn" data-url="${card.mendataUrl || '#'}">
+                    Mendata
+                </a>
+                <a href="#" class="btn btn-secondary card-lihat-data-btn" data-url="${card.lihatDataUrl || '#'}">
+                    Melihat Data
+                </a>
+            </div>
+        `;
+        
+        // Setup button events
+        const btnMendata = cardDiv.querySelector('.card-mendata-btn');
+        const btnLihatData = cardDiv.querySelector('.card-lihat-data-btn');
+        
+        // Setup Mendata button
+        if (btnMendata) {
+            const mendataUrl = card.mendataUrl || '#';
+            if (isValidUrl(mendataUrl)) {
+                btnMendata.href = mendataUrl;
+                btnMendata.classList.remove('disabled');
+            } else {
+                btnMendata.href = '#';
+                btnMendata.classList.add('disabled');
+                btnMendata.onclick = function(e) {
+                    e.preventDefault();
+                    alert('Link Google Form untuk card ini belum dikonfigurasi. Silakan hubungi administrator.');
+                };
+            }
+        }
+        
+        // Setup Melihat Data button
+        if (btnLihatData) {
+            const lihatDataUrl = card.lihatDataUrl || '#';
+            if (isValidUrl(lihatDataUrl)) {
+                btnLihatData.href = lihatDataUrl;
+                btnLihatData.classList.remove('disabled');
+            } else {
+                btnLihatData.href = '#';
+                btnLihatData.classList.add('disabled');
+                btnLihatData.onclick = function(e) {
+                    e.preventDefault();
+                    alert('Fitur Melihat Data untuk card ini sedang dalam pengembangan. Mohon tunggu update selanjutnya.');
+                };
+            }
         }
     }
     

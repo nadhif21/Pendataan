@@ -42,6 +42,12 @@ const BKKBN_CONFIG = {
                 title: 'Input Data Kerja SUB PPKBD',
                 mendataUrl: 'https://forms.gle/NetujLNN78VcvKR47',
                 lihatDataUrl: 'sub-kerja/sub-work.html'
+            },
+            {
+                id: 'kesertaan-kb-bulan',
+                title: 'Input KESERTAAN KB/BULAN',
+                inputUrl: 'sub/kb-bulan.html',
+                singleButton: true // Flag untuk menampilkan hanya satu button
             }
             // Tambahkan card lain untuk SUB di sini
         ]
