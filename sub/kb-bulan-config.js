@@ -13,8 +13,8 @@ const CONFIG = {
     // - Ganti URL di bawah dengan URL Apps Script KESERTAAN KB/BULAN Anda
     // - Pastikan Apps Script sudah di-deploy sebagai Web App dengan akses "Anyone"
     // - Lihat contoh script di: docs/google-apps-script-example.js
-    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyFSCj76Rdl0BBZCDRCUh582YKNCbbWLH4Xt5hoqdeAK5GHCek_JSCLiH7XQ-1fLoQP/exec',
+    APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyqer2ztWLZsMARUvme9EyQJP3o8HtyVRTW8GQ0nLgkbqpalNZQQXwISn83Lq9h7NPR/exec',
     
     // URL untuk update data (bisa sama dengan APPS_SCRIPT_URL jika menggunakan doPost)
-    UPDATE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyFSCj76Rdl0BBZCDRCUh582YKNCbbWLH4Xt5hoqdeAK5GHCek_JSCLiH7XQ-1fLoQP/exec'
+    UPDATE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyqer2ztWLZsMARUvme9EyQJP3o8HtyVRTW8GQ0nLgkbqpalNZQQXwISn83Lq9h7NPR/exec'
 };
